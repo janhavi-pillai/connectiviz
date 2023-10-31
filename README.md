@@ -1,0 +1,2 @@
+# connectiviz
+Functional connectivity visualizations!
