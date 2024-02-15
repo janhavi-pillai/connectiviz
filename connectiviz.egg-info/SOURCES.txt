@@ -1,6 +1,5 @@
 FC_maps.ipynb
 README.md
-Yeo_functional_17_networks_plot_from_PEARSON_CORR.ipynb
 Yeo_functional_networks_plot.ipynb
 chord_2.ipynb
 generate_FC_diagram.py
