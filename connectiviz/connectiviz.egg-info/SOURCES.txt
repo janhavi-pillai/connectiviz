@@ -1,0 +1,11 @@
+setup.py
+connectiviz/__init__.py
+connectiviz/calculating_connectivity.py
+connectiviz/load_networks.py
+connectiviz/plots.py
+connectiviz/utils.py
+connectiviz.egg-info/PKG-INFO
+connectiviz.egg-info/SOURCES.txt
+connectiviz.egg-info/dependency_links.txt
+connectiviz.egg-info/requires.txt
+connectiviz.egg-info/top_level.txt
