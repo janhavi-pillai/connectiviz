@@ -90,3 +90,5 @@ def plot_correlation_matrix(matrix_df,network_labels, max_size=2500):
     #plt.grid(True)
     plt.colorbar()
     plt.show()
+
+    #Add in chord plot (that thresholds)

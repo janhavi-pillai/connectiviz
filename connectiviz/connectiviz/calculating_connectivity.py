@@ -122,3 +122,99 @@ def count_inter_network_connectivity(original_timeseries, new_timeseries, networ
     return inter_network_counter
 
 connectivity_count = count_inter_network_connectivity()
+
+
+#Thresholded Connectivity
+def threshold_dataframe(df, threshold):
+    """
+    Takes a DataFrame and replaces all numeric values below a given threshold with 0.
+    Non-numeric values are left as is.
+
+    Parameters:
+    df (pd.DataFrame): DataFrame to apply thresholding to.
+    threshold (float): Threshold value to determine whether to keep a cell's numeric value or set it to 0.
+
+    Returns:
+    pd.DataFrame: New DataFrame with thresholding applied.
+    """
+    # Apply a function to the entire DataFrame to threshold values
+    # This function will ignore non-numeric values
+    thresholded_df = df.map(lambda x: x if isinstance(x, (int, float)) and x >= threshold else 0 if isinstance(x, (int, float)) else x)
+    
+    return thresholded_df
+
+
+def generate_edges_and_weights(df, excluded_columns):
+    """
+    Generates all possible edges between regions within a dataframe,
+    including self-pairing, and retrieves the edge weights.
+
+    Parameters:
+    df (pd.DataFrame): DataFrame containing the regions as columns and edge weights.
+    excluded_columns (list): List of column names to exclude from edge creation.
+
+    Returns:
+    list of tuples: List containing all possible edges (pairs of regions) with their weights.
+    """
+    # Create a list of all column names, excluding the specified ones
+    regions = [col for col in df.columns if col not in excluded_columns]
+    
+    # Create an empty list to store the edges with weights
+    edges_with_weights = []
+    
+    # Generate all pairs of regions and retrieve their corresponding edge weights
+    for i, region1 in enumerate(regions):
+        for j, region2 in enumerate(regions):
+            # For each pair, append the edge (region1, region2) and its weight
+            weight = df.at[i, region2]
+            edges_with_weights.append(((region1, region2), weight))
+
+    return edges_with_weights
+
+def generate_edges_and_weights_with_network(df, excluded_columns, network_name):
+    """
+    Generates all possible edges between regions within a dataframe,
+    including self-pairing, and retrieves the edge weights and network mapping.
+
+    Parameters:
+    df (pd.DataFrame): DataFrame containing the regions as columns, edge weights, and network mapping.
+    excluded_columns (list): List of column names to exclude from edge creation.
+    network_name (str): Column name that contains the network mapping.
+
+    Returns:
+    list of tuples: List containing all possible edges (pairs of networks) with their weights.
+    """
+    # Create a list of all column names, excluding the specified ones
+    regions = [col for col in df.columns if col not in excluded_columns]
+    
+    # Map each region to its corresponding network
+    region_to_network = pd.Series(df[network_name].values, index=df.region).to_dict()
+
+    # Create an empty list to store the edges with weights
+    edges_with_weights = []
+    
+    # Generate all pairs of regions and retrieve their corresponding edge weights and network mappings
+    for i, region1 in enumerate(regions):
+        for region2 in regions:
+            # Map regions to networks
+            network1 = region_to_network.get(region1)
+            network2 = region_to_network.get(region2)
+
+            # Retrieve the edge weight
+            weight = df.at[i, region2]
+
+            # Append the edge with network mapping and its weight to the list
+            edges_with_weights.append(((network1, network2), weight))
+
+    return edges_with_weights
+
+def count_network_pairs_above_threshold(edges_weights_with_networks, threshold):
+    network_pair_counts = {}
+    for edge in edges_weights_with_networks:
+        network_pair = edge[0]
+        weight = edge[1]
+        if network_pair not in network_pair_counts:
+            network_pair_counts[network_pair] = 0
+        if weight >= threshold:
+            network_pair_counts[network_pair] += 1
+    network_pair_counts
